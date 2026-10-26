@@ -1,38 +1,33 @@
-# Job Portal with Role-Based Access
+# Job Portal
 
-A full-stack job portal with three roles (Candidate, Recruiter, Admin), JWT authentication, resume upload and application tracking.
+A full-stack job portal with three roles: candidate, recruiter and admin.
 
-## Tech stack
-Java 17, Spring Boot 3, Spring Security (JWT), Spring Data JPA, MySQL 8, React 18 (Vite), Swagger/OpenAPI, JUnit 5, Mockito, Docker.
+**Stack:** Spring Boot 3.2 (Java 17+), Spring Security with JWT, MySQL 8, React 18 with Vite.
 
 ## Features
-- Register and log in as a Candidate or Recruiter; a seeded Admin account manages users.
-- JWT authentication with role-based access control on every endpoint.
-- Recruiters post and delete jobs, then review applications and move each one through Applied, Shortlisted or Rejected.
-- Candidates search jobs by title, company and location with pagination, apply with a PDF or Word resume, and track their status.
-- Email notification on every status change (logged to the console unless SMTP is configured).
-- Admin dashboard with platform statistics and user management.
-- REST API documented with Swagger UI; service-layer logic covered by JUnit and Mockito tests.
+- Register and log in as candidate or recruiter (JWT)
+- Recruiters post and delete jobs, review applicants, download resumes, change statuses
+- Candidates search jobs, apply with a PDF resume, track status
+- Admin dashboard with totals and user management
+- Swagger UI at `/swagger-ui/index.html`
 
-## Run it
-1. Start MySQL: `docker compose up -d mysql`
-2. Backend: `cd backend && mvn spring-boot:run` (API on http://localhost:8080, Swagger at /swagger-ui.html)
-3. Frontend: `cd frontend && npm install && npm run dev` (app on http://localhost:5173)
+## Run locally or in GitHub Codespaces
 
-Run everything except the frontend in Docker with `docker compose up --build`.
-Run the tests with `cd backend && mvn test`.
+Use three terminals.
 
-Demo admin login: `admin@jobportal.com` / `Admin@123`
+1. Database:
+   `docker compose up -d mysql`
+2. Backend (port 8080):
+   `cd backend && mvn spring-boot:run`
+3. Frontend (port 5173):
+   `cd frontend && npm install && npm run dev -- --host`
 
-## Main API endpoints
-| Method | Path | Who |
-|---|---|---|
-| POST | /api/auth/register, /api/auth/login | Public |
-| GET | /api/jobs?q=&location=&page=&size= | Public |
-| POST | /api/jobs | Recruiter |
-| DELETE | /api/jobs/{id} | Recruiter (owner) or Admin |
-| POST | /api/applications/{jobId} | Candidate |
-| GET | /api/applications/mine | Candidate |
-| GET | /api/applications/recruiter | Recruiter |
-| PUT | /api/applications/{id}/status | Recruiter (owner) |
-| GET | /api/admin/stats, /api/admin/users | Admin |
+Open the frontend at `http://localhost:5173`. In Codespaces, open the forwarded port from the Ports tab.
+
+## Default admin
+- Email: `admin@jobportal.com`
+- Password: `Admin@123` (change this in `DataSeeder.java` before any public use)
+
+## Notes
+- The frontend proxies `/api` to the backend through `vite.config.js`, and removes the `Origin` header so Spring's CORS check doesn't reject Codespaces URLs.
+- On Java 23+, `pom.xml` enables Lombok through `annotationProcessorPaths` and pins Lombok 1.18.42 and Byte Buddy 1.17.7.
